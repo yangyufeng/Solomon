@@ -1,4 +1,3 @@
-
 #!/usr/bin python
 # -*-coding:utf-8 -*-
 #index.py
@@ -18,7 +17,7 @@ conn= MySQLdb.connect(
 					host='localhost',
 					port = 3306,
 					user='root',
-					passwd='1',
+					passwd='123',
 					db ='company',
 					charset='utf8',
 					)
