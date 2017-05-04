@@ -1,0 +1,16 @@
+sudo apt-get purge python-pip
+sudo pip install pymongo
+sudo pip install MySQL-python
+sudo pip install Flask
+
+
+
+
+
+通过setup卸载
+sudo python setup.py install --record files.txt
+sudo cat files.txt | xargs sudo rm -rf
+
+查找python安装目录
+improt sys
+print sys.path
