@@ -1,29 +1,17 @@
 #!/usr/bin python
 # -*-coding:utf-8 -*-
-#index.py
+#sendMessage.py
+
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+import requests
 from datetime import *
 from json import dumps
-
+import json
 import MySQLdb
-
-from flask import Flask
-
-
-app = Flask(__name__)
-
-app.config.update(
-	DEBUG = False,
-)
-
-#路径例子
-@app.route('/user/<username>')
-def show_user_profile(username): 
-	# show the user profile for that user 
-	return 'User %s' % username
+from logging import getLogger
 
 #data operation
 def getSaveTime(cur,origin):
@@ -39,11 +27,15 @@ def getNewsByTime(cur,origin,time1,time2):
 	#print time2
 	#print time1
 	sql = "select keyword,title,description,url,origin,pubtime from chairmansNews where datatime between '%s' and '%s' and origin = '%s'"%(time2,time1,origin)
+	#print sql
 	count = cur.execute(sql)
-	cur.scroll(0,mode='absolute')
-	#获取所有结果
-	results = cur.fetchall()
-	return results	
+	if count != 0:
+		cur.scroll(0,mode='absolute')
+		#获取所有结果
+		results = cur.fetchall()
+		return results
+	else:
+		return count
 
 #mysql中datetime在python中字符串化
 def json_date(obj):
@@ -53,19 +45,9 @@ def json_date(obj):
 		return serial
 	raise TypeError ("Type not serializable")
 
-@app.route('/showVideos/<origin>')
-def showTencentVideo(origin):
-	#接库
-	conn= MySQLdb.connect(
-						host='localhost',
-						port = 3306,
-						user='root',
-						passwd='123',
-						db ='company',
-						charset='utf8',
-						)
-	cur = conn.cursor()
 
+def sendMessage(cur,origin):
+	logger = getLogger("sendMessage")
 	#获取最新两条时间
 	arrTime = []
 	resSaveTime = getSaveTime(cur,origin)
@@ -78,30 +60,34 @@ def showTencentVideo(origin):
 
 	#分类拿取两个时间点中的数据
 	resNews = getNewsByTime(cur,origin,time1,time2)
+	if resNews != 0:
+		logger.info("此时间段有取数据！")
+	else:
+		logger.info("此时间段无抓取数据！")
+		exit()
+		
 
-	ArrNews = []
-	arrNews = {'keyword': '','title': '','description': '','url':'','origin':'','pubtime':''}
+	str = ''
 
 	for rNews in resNews:
+
 		rk = rNews[0]
 		rt = rNews[1]
 		rd = rNews[2]
 		ru = rNews[3]
 		ro = rNews[4]
 		rp = dumps(rNews[5], default=json_date)
-		arrNews = {'keyword': rk,'title': rt,'description': rd,'url':ru,'origin':ro,'pubtime':rp}#
-		ArrNews.append(arrNews)		
 
-	#Json化同时设置UTF8编码
-	encodedjson = dumps(ArrNews, ensure_ascii=False).encode('utf-8') 
+		rstr = '来源：' + ro + ' 人物：' + rk + '\n' + '标题：' + rt + '\n' + '地址：' + ru + '\n' + '发布时间：' + rp + '\n\n' 
+		str += rstr 
 
-	cur.close()
-	conn.commit()
-	conn.close()	
-	return encodedjson
-
-if __name__ == "__main__":
-	app.run(host='0.0.0.0')
+	res = requests.post("http://120.26.99.59:8087/baoer/wscn2_send_message/", json={"msg_to": "videoTest", "msg_body": str})
+	#print res.url
+	#res.encoding = 'utf-8'
+	resArr = json.loads(res.text)
+	if resArr['is_success'] == True:
+			logger.info("推送成功！")
 
 
+	return res
 

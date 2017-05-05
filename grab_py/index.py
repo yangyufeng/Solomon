@@ -2,15 +2,16 @@
 # -*-coding:utf-8 -*-
 #index.py
 
-import MySQLdb
-import requests
-from lxml import etree
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+import MySQLdb
+from lxml import etree
+
 #加载tencentVideo
 from getTencentVideo import getTencentVideo
+from sendMessage import sendMessage
 
 #接库
 conn= MySQLdb.connect(
@@ -44,8 +45,10 @@ if __name__ == '__main__':
 
 
 	setup_logger("TencentVideo")
-
 	getTencentVideo(cur,TVdes,TVori)
+
+	setup_logger("sendMessage")
+	sendMessage(cur,TVori)
 
 cur.close()
 conn.commit()
