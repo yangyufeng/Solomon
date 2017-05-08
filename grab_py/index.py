@@ -18,7 +18,7 @@ conn= MySQLdb.connect(
 					host='localhost',
 					port = 3306,
 					user='root',
-					passwd='123',
+					passwd='1',
 					db ='company',
 					charset='utf8',
 					)
