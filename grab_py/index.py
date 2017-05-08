@@ -43,7 +43,6 @@ if __name__ == '__main__':
 		logger.setLevel(getattr(logging, "DEBUG"))
 		logger.addHandler(handler)
 
-
 	setup_logger("TencentVideo")
 	getTencentVideo(cur,TVdes,TVori)
 
