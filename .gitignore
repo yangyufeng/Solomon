@@ -7,3 +7,6 @@ grab_py/log_sendMessage.log
 
 grab_py/sendMessage.pyc
 
+*.pyc
+
+*.log
