@@ -65,7 +65,6 @@ def sendMessage(cur,origin):
 	else:
 		logger.info("此时间段无抓取数据！")
 		exit()
-		
 
 	str = ''
 
@@ -83,11 +82,9 @@ def sendMessage(cur,origin):
 
 	res = requests.post("http://120.26.99.59:8087/baoer/wscn2_send_message/", json={"msg_to": "videoTest", "msg_body": str})
 	#print res.url
-	#res.encoding = 'utf-8'
+	res.encoding = 'utf-8'
 	resArr = json.loads(res.text)
 	if resArr['is_success'] == True:
 			logger.info("推送成功！")
-
-
 	return res
 
