@@ -7,6 +7,8 @@ grab_py/log_sendMessage.log
 
 grab_py/sendMessage.pyc
 
+grab_py/master_test
+
 *.pyc
 
 *.log
